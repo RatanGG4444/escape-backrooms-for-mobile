@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Escape The Backrooms - Multiplayer HTML5 Horror Game">
+    <title>Escape The Backrooms - Play Online</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <h1 class="title">THE BACKROOMS</h1>
+        <div class="loading-bar">
+            <div class="loading-progress" id="loading-progress"></div>
+        </div>
+        <p id="loading-text">Loading...</p>
+    </div>
+
+    <!-- Main Menu -->
+    <div id="main-menu" class="hidden">
+        <div class="menu-container">
+            <h1 class="title glitch">ESCAPE THE BACKROOMS</h1>
+            <p class="subtitle">Multiplayer Survival Horror</p>
+            
+            <div class="menu-buttons">
+                <button class="btn btn-primary" onclick="startSinglePlayer()">
+                    <span>SOLO PLAY</span>
+                </button>
+                <button class="btn btn-primary" onclick="hostMultiplayer()">
+                    <span>HOST GAME</span>
+                </button>
+                <button class="btn btn-primary" onclick="showJoinMenu()">
+                    <span>JOIN GAME</span>
+                </button>
+                <button class="btn btn-secondary" onclick="showSettings()">
+                    <span>SETTINGS</span>
+                </button>
+                <button class="btn btn-secondary" onclick="showControls()">
+                    <span>CONTROLS</span>
+                </button>
+            </div>
+
+            <div class="stats">
+                <p>Players Online: <span id="online-count">0</span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Join Menu -->
+    <div id="join-menu" class="hidden">
+        <div class="menu-container">
+            <h2>Join Game</h2>
+            <input type="text" id="room-code" placeholder="Enter Room Code" maxlength="6">
+            <input type="text" id="player-name" placeholder="Your Name" maxlength="20">
+            <div class="menu-buttons">
+                <button class="btn btn-primary" onclick="joinRoom()">JOIN</button>
+                <button class="btn btn-secondary" onclick="backToMenu()">BACK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Canvas -->
+    <canvas id="game-canvas" class="hidden"></canvas>
+
+    <!-- HUD -->
+    <div id="hud" class="hidden">
+        <div class="hud-top">
+            <div class="health-bar">
+                <div class="bar-label">HEALTH</div>
+                <div class="bar">
+                    <div id="health-fill" class="bar-fill" style="width: 100%"></div>
+                </div>
+            </div>
+            <div class="sanity-bar">
+                <div class="bar-label">SANITY</div>
+                <div class="bar">
+                    <div id="sanity-fill" class="bar-fill sanity" style="width: 100%"></div>
+                </div>
+            </div>
+            <div class="stamina-bar">
+                <div class="bar-label">STAMINA</div>
+                <div class="bar">
+                    <div id="stamina-fill" class="bar-fill stamina" style="width: 100%"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="hud-bottom">
+            <div class="flashlight-indicator">
+                <span id="flashlight-icon">🔦</span>
+                <span id="battery-percent">100%</span>
+            </div>
+            <div class="level-info">
+                <span id="level-name">LEVEL 0</span>
+            </div>
+        </div>
+
+        <div class="crosshair"></div>
+    </div>
+
+    <!-- Death Screen -->
+    <div id="death-screen" class="hidden">
+        <h1 class="death-text">YOU DIED</h1>
+        <p class="death-message">Lost in the endless maze...</p>
+        <div class="death-stats">
+            <p>Survival Time: <span id="survival-time">0:00</span></p>
+            <p>Level Reached: <span id="level-reached">0</span></p>
+        </div>
+        <button class="btn btn-primary" onclick="respawn()">RESPAWN</button>
+        <button class="btn btn-secondary" onclick="backToMenu()">MAIN MENU</button>
+    </div>
+
+    <!-- Settings Panel -->
+    <div id="settings-panel" class="hidden">
+        <div class="panel-container">
+            <h2>Settings</h2>
+            <div class="setting-item">
+                <label>Mouse Sensitivity: <span id="sens-value">50</span></label>
+                <input type="range" id="sensitivity" min="10" max="100" value="50">
+            </div>
+            <div class="setting-item">
+                <label>Master Volume: <span id="vol-value">100</span></label>
+                <input type="range" id="volume" min="0" max="100" value="100">
+            </div>
+            <div class="setting-item">
+                <label>Graphics Quality:</label>
+                <select id="quality">
+                    <option value="low">Low</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="high">High</option>
+                </select>
+            </div>
+            <button class="btn btn-primary" onclick="saveSettings()">SAVE</button>
+            <button class="btn btn-secondary" onclick="closeSettings()">CLOSE</button>
+        </div>
+    </div>
+
+    <!-- Controls Panel -->
+    <div id="controls-panel" class="hidden">
+        <div class="panel-container">
+            <h2>Controls</h2>
+            <div class="controls-grid">
+                <div class="control-item"><kbd>W A S D</kbd> Move</div>
+                <div class="control-item"><kbd>MOUSE</kbd> Look</div>
+                <div class="control-item"><kbd>SHIFT</kbd> Sprint</div>
+                <div class="control-item"><kbd>CTRL</kbd> Crouch</div>
+                <div class="control-item"><kbd>F</kbd> Flashlight</div>
+                <div class="control-item"><kbd>E</kbd> Interact</div>
+                <div class="control-item"><kbd>ESC</kbd> Pause</div>
+                <div class="control-item"><kbd>V</kbd> Voice Chat</div>
+            </div>
+            <button class="btn btn-primary" onclick="closeControls()">CLOSE</button>
+        </div>
+    </div>
+
+    <!-- Chat -->
+    <div id="chat-container" class="hidden">
+        <div id="chat-messages"></div>
+        <input type="text" id="chat-input" placeholder="Press T to chat...">
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="level-generator.js"></script>
+    <script src="player.js"></script>
+    <script src="entities.js"></script>
+    <script src="multiplayer.js"></script>
+    <script src="audio.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
